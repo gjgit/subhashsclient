@@ -20,7 +20,7 @@ import gql from 'graphql-tag';
 
 import { AuthContext } from '../../context/auth';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.background.default,
     height: '100%'
@@ -120,7 +120,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SignIn = props => {
+const SignIn = (props) => {
   const context = useContext(AuthContext);
   const { history } = props;
   const classes = useStyles();
@@ -134,7 +134,7 @@ const SignIn = props => {
   });
   const [errors, setErrors] = useState({});
   const [open, setOpen] = useState(false);
-  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const [loginUser, { loading }] = useMutation(LOGIN_USER, {
     update(_, { data: { login: userData } }) {
@@ -148,7 +148,7 @@ const SignIn = props => {
     variables: values
   });
 
-  const onSubmit = async values => {
+  const onSubmit = async (values) => {
     await sleep(300);
     setOpen(!open);
     setValues({ ...values, values });
@@ -206,7 +206,7 @@ const SignIn = props => {
                   fullWidth
                   size="large"
                   variant="contained">
-                  Sign in now
+                  Sign in nowwww
                 </Button>
                 <Typography color="textSecondary" variant="body1">
                   Don't have an account?{' '}
