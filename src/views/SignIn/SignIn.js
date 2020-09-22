@@ -206,7 +206,7 @@ const SignIn = (props) => {
                   fullWidth
                   size="large"
                   variant="contained">
-                  Sign in nowwww
+                  Sign in now
                 </Button>
                 <Typography color="textSecondary" variant="body1">
                   Don't have an account?{' '}
