@@ -8,7 +8,7 @@ import { setContext } from 'apollo-link-context';
 
 const httpLink = createHttpLink({
   //uri: 'https://infinite-reef-39998.herokuapp.com/'
-  uri: ' http://localhost:5000/'
+  uri: 'https://subhashserver.herokuapp.com/'
 });
 
 const authLink = setContext(() => {
