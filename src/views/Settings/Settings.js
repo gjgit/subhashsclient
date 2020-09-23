@@ -1,8 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
-
-import { Notifications, Password } from './components';
+import { Main as MainLayout, Minimal as MinimalLayout } from '../../layouts';
+import { CreateAndDisplayPackage } from './components';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -14,16 +14,15 @@ const Settings = () => {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
-      <Grid container spacing={4}>
-        <Grid item md={7} xs={12}>
-          <Notifications />
+    <MainLayout>
+      <div className={classes.root}>
+        <Grid container spacing={4}>
+          <Grid item md={12} xs={12}>
+            <CreateAndDisplayPackage />
+          </Grid>
         </Grid>
-        <Grid item md={5} xs={12}>
-          <Password />
-        </Grid>
-      </Grid>
-    </div>
+      </div>
+    </MainLayout>
   );
 };
 

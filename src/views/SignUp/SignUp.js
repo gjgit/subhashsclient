@@ -12,13 +12,13 @@ import {
   CircularProgress,
   FormLabel
 } from '@material-ui/core';
-import { TextField, Radios, Checkboxes } from 'mui-rff';
+import { TextField, Radios, Checkboxes, CheckboxData } from 'mui-rff';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import StarIcon from '@material-ui/icons/StarBorder';
 
-import { Form } from 'react-final-form';
+import { Form, Field } from 'react-final-form';
 
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import { AuthContext } from '../../context/auth';
@@ -118,6 +118,9 @@ const useStyles = makeStyles(theme => ({
   title: {
     marginTop: theme.spacing(3)
   },
+  title2: {
+    marginTop: theme.spacing(3)
+  },
   textField: {
     marginTop: theme.spacing(2)
   },
@@ -161,7 +164,17 @@ const SignUp = props => {
     confirmPassword: ''
   });
   const [errors, setErrors] = useState({});
+  const [packvalues, setpackvalues] = useState({});
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const {
+    data: { getPacks: datas }
+  } = useQuery(FETCH_PACK_QUERY);
+  let checkboxData;
+  if (datas) {
+    checkboxData = [datas];
+    console.log(datas);
+    //setpackvalues(datas);
+  }
 
   const getLocalItem = localStorage.getItem('jwtToken');
   const [addUser, { loading }] = useMutation(REGISTER_USER, {
@@ -274,24 +287,19 @@ const SignUp = props => {
                 <FormLabel component="legend" className={classes.title}>
                   Choose Your Packages
                 </FormLabel>
-                <Checkboxes
-                  name="packages"
-                  required={true}
-                  data={[
-                    { label: 'Free', value: 'free' },
-                    { label: 'Pro', value: 'pro' },
-                    { label: 'Enterprise', value: 'enterprise' }
-                  ]}
-                />
-                {errors.packages && (
-                  <Typography
-                    variant="caption"
-                    display="block"
-                    gutterBottom
-                    className={classes.Cuserror}>
-                    Please check any package
-                  </Typography>
-                )}
+                {datas &&
+                  datas.map((post, index) => (
+                    <label key={post.id}>
+                      <Field
+                        className={classes.title2}
+                        name="package"
+                        component="input"
+                        type="checkbox"
+                        value={post.value}
+                      />{' '}
+                      {post.label}
+                    </label>
+                  ))}
                 {getLocalItem && user.user.role === 'SuperAdmin' && (
                   <FormLabel component="legend" className={classes.title}>
                     Create a Role
@@ -336,7 +344,7 @@ const SignUp = props => {
                     Sign in
                   </Link>
                 </Typography>
-                {/* <pre>{JSON.stringify(values, 0, 2)}</pre> */}
+                <pre>{JSON.stringify(values, 0, 2)}</pre>
               </form>
             )}
           />
@@ -372,6 +380,15 @@ const REGISTER_USER = gql`
       token
       role
       packages
+    }
+  }
+`;
+
+const FETCH_PACK_QUERY = gql`
+  {
+    getPacks {
+      label
+      value
     }
   }
 `;

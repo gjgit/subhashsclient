@@ -54,6 +54,11 @@ const Sidebar = props => {
       title: 'Account',
       href: '/account',
       icon: <AccountBoxIcon />
+    },
+    {
+      title: 'Package',
+      href: '/settings',
+      icon: <SettingsIcon />
     }
   ];
   if (1 == 2) {
