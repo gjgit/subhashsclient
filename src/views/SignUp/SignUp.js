@@ -166,15 +166,6 @@ const SignUp = props => {
   const [errors, setErrors] = useState({});
   const [packvalues, setpackvalues] = useState({});
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-  const {
-    data: { getPacks: datas }
-  } = useQuery(FETCH_PACK_QUERY);
-  let checkboxData;
-  if (datas) {
-    checkboxData = [datas];
-    console.log(datas);
-    //setpackvalues(datas);
-  }
 
   const getLocalItem = localStorage.getItem('jwtToken');
   const [addUser, { loading }] = useMutation(REGISTER_USER, {
@@ -209,6 +200,9 @@ const SignUp = props => {
     setValues({ ...values, values });
     addUser();
   };
+  const {
+    data: { getPacks: datas }
+  } = useQuery(FETCH_PACK_QUERY);
 
   return (
     <div className={classes.root}>
@@ -289,10 +283,10 @@ const SignUp = props => {
                 </FormLabel>
                 {datas &&
                   datas.map((post, index) => (
-                    <label key={post.id}>
+                    <label key={index}>
                       <Field
                         className={classes.title2}
-                        name="package"
+                        name="packages"
                         component="input"
                         type="checkbox"
                         value={post.value}
