@@ -83,11 +83,17 @@ const CreatePackage = props => {
     label: '',
     value: ''
   });
+
   const [createPack] = useMutation(CREATE_PACK, {
-    update(_, { data: { createPack } }) {
-      console.log('createPack' + JSON.stringify(createPack));
-      setOpend(true);
+    update(proxy, result) {
+      const data = proxy.readQuery({
+        query: FETCH_PACK_QUERY
+      });
+      data.getPacks = [result.data.createPack, ...data.getPacks];
+      //console.table('after' + JSON.stringify(data.getPacks, null, '\t'));
+      proxy.writeQuery({ query: FETCH_PACK_QUERY, data });
       setOpen(false);
+      setValues({ label: '', value: '' });
     },
     onError(err) {
       setOpen(false);
@@ -137,7 +143,16 @@ const CreatePackage = props => {
                 pristine,
                 values
               }) => (
-                <form onSubmit={handleSubmit} noValidate>
+                <form
+                  onSubmit={event => {
+                    const promise = handleSubmit(event);
+                    promise &&
+                      promise.then(() => {
+                        form.reset();
+                      });
+                    return promise;
+                  }}
+                  noValidate>
                   <Grid container spacing={6} wrap="wrap">
                     <Grid className={classes.item} item md={4}>
                       <TextField
@@ -204,7 +219,11 @@ const CreatePackage = props => {
 
 const CREATE_PACK = gql`
   mutation createPack($label: String!, $value: String!) {
-    createPack(label: $label, value: $value)
+    createPack(label: $label, value: $value) {
+      id
+      label
+      value
+    }
   }
 `;
 
