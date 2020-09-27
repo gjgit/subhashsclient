@@ -68,8 +68,8 @@ const CreatePackage = props => {
             <IconButton
               aria-label="delete"
               size="small"
-              onClick={() => {
-                // console.log({ item });
+              onClick={e => {
+                e.preventDefault();
                 deletePacks({ item });
               }}>
               <DeleteIcon />
@@ -83,6 +83,7 @@ const CreatePackage = props => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [opend, setOpend] = useState(false);
+  const [onDeletePack, setonDeletePack] = useState(false);
   const [errors, setErrors] = useState({});
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
   const [values, setValues] = useState({
@@ -120,12 +121,15 @@ const CreatePackage = props => {
       const data = proxy.readQuery({
         query: FETCH_PACK_QUERY
       });
-      //data.getPacks = [result.data.createPack, ...data.getPacks];
-      proxy.writeQuery({ query: FETCH_PACK_QUERY, data });
-      console.log('data' + JSON.stringify(data));
+      var index = data.getPacks
+        .map(function(img) {
+          return img.id;
+        })
+        .indexOf(result.data.deletePack.id);
+      const filteredPeople = data.getPacks.splice(index, 1);
+      setonDeletePack(true);
     },
     onError(err) {
-      //setOpen(false);
       setErrors(err.graphQLErrors[0].extensions.exception.errors);
     },
     variables: packId
@@ -153,6 +157,20 @@ const CreatePackage = props => {
           }}
           severity="success">
           Package Added Succuessfullyyy!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={onDeletePack}
+        autoHideDuration={2000}
+        onClose={() => {
+          setonDeletePack(false);
+        }}>
+        <Alert
+          onClose={() => {
+            setonDeletePack(false);
+          }}
+          severity="success">
+          Package Deleted Succuessfullyyy!
         </Alert>
       </Snackbar>
       <CardHeader
@@ -268,7 +286,11 @@ const FETCH_PACK_QUERY = gql`
 
 const DELETE_PACK_QUERY = gql`
   mutation deletePack($packId: ID!) {
-    deletePack(packId: $packId)
+    deletePack(packId: $packId) {
+      id
+      label
+      value
+    }
   }
 `;
 
