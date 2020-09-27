@@ -49,6 +49,10 @@ const useStyles = makeStyles(theme => ({
 
 const CreatePackage = props => {
   const { className, ...rest } = props;
+  const [packId, setpackId] = useState({
+    packId: ''
+  });
+
   const {
     loading,
     data: { getPacks: datas }
@@ -65,7 +69,8 @@ const CreatePackage = props => {
               aria-label="delete"
               size="small"
               onClick={() => {
-                console.log({ item });
+                // console.log({ item });
+                deletePacks({ item });
               }}>
               <DeleteIcon />
             </IconButton>
@@ -74,6 +79,7 @@ const CreatePackage = props => {
       );
     });
   }
+
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [opend, setOpend] = useState(false);
@@ -93,6 +99,7 @@ const CreatePackage = props => {
       //console.table('after' + JSON.stringify(data.getPacks, null, '\t'));
       proxy.writeQuery({ query: FETCH_PACK_QUERY, data });
       setOpen(false);
+      setOpend(true);
       setValues({ label: '', value: '' });
     },
     onError(err) {
@@ -100,6 +107,28 @@ const CreatePackage = props => {
       setErrors(err.graphQLErrors[0].extensions.exception.errors);
     },
     variables: values
+  });
+  function deletePacks(a) {
+    setpackId({ packId: a.item.id });
+    //alert(JSON.stringify(packId));
+    if (packId) {
+      deletePack();
+    }
+  }
+  const [deletePack] = useMutation(DELETE_PACK_QUERY, {
+    update(proxy, result) {
+      const data = proxy.readQuery({
+        query: FETCH_PACK_QUERY
+      });
+      //data.getPacks = [result.data.createPack, ...data.getPacks];
+      proxy.writeQuery({ query: FETCH_PACK_QUERY, data });
+      console.log('data' + JSON.stringify(data));
+    },
+    onError(err) {
+      //setOpen(false);
+      setErrors(err.graphQLErrors[0].extensions.exception.errors);
+    },
+    variables: packId
   });
   const onSubmit = async values => {
     setOpen(!open);
@@ -234,6 +263,12 @@ const FETCH_PACK_QUERY = gql`
       label
       value
     }
+  }
+`;
+
+const DELETE_PACK_QUERY = gql`
+  mutation deletePack($packId: ID!) {
+    deletePack(packId: $packId)
   }
 `;
 
