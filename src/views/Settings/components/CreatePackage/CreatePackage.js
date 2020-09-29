@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
@@ -52,34 +52,6 @@ const CreatePackage = props => {
   const [packId, setpackId] = useState({
     packId: ''
   });
-
-  const {
-    loading,
-    data: { getPacks: datas }
-  } = useQuery(FETCH_PACK_QUERY);
-  let itemsToRender;
-  if (datas) {
-    itemsToRender = datas.map(item => {
-      return (
-        <TableRow key={item.id}>
-          <TableCell>{item.label}</TableCell>
-          <TableCell>{item.value}</TableCell>
-          <TableCell>
-            <IconButton
-              aria-label="delete"
-              size="small"
-              onClick={e => {
-                e.preventDefault();
-                deletePacks({ item });
-              }}>
-              <DeleteIcon />
-            </IconButton>
-          </TableCell>
-        </TableRow>
-      );
-    });
-  }
-
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [opend, setOpend] = useState(false);
@@ -109,13 +81,38 @@ const CreatePackage = props => {
     },
     variables: values
   });
-  function deletePacks(a) {
-    setpackId({ packId: a.item.id });
-    //alert(JSON.stringify(packId));
-    if (packId) {
-      deletePack();
-    }
+
+  const {
+    loading,
+    data: { getPacks: datas }
+  } = useQuery(FETCH_PACK_QUERY);
+  let itemsToRender;
+  if (datas) {
+    itemsToRender = datas.map(item => {
+      return (
+        <TableRow key={item.id}>
+          <TableCell>{item.label}</TableCell>
+          <TableCell>{item.value}</TableCell>
+          <TableCell>
+            <IconButton
+              aria-label="delete"
+              size="small"
+              onClick={e => {
+                e.preventDefault();
+                setpackId({ packId: item.id });
+              }}>
+              <DeleteIcon />
+            </IconButton>
+          </TableCell>
+        </TableRow>
+      );
+    });
   }
+
+  useEffect(() => {
+    deletePack();
+  }, [packId]);
+
   const [deletePack] = useMutation(DELETE_PACK_QUERY, {
     update(proxy, result) {
       const data = proxy.readQuery({
